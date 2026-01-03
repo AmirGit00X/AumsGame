@@ -8,7 +8,7 @@ let mySymbol = "";
 let gameTimer = null;
 let timeLeft = 30;
 
-// --- مدیریت حافظه ۲۴ ساعته نام کاربری ---
+// --- شروع برنامه و مدیریت حافظه ---
 window.onload = () => {
     const savedName = localStorage.getItem('aums_user');
     const savedTime = localStorage.getItem('aums_time');
@@ -18,161 +18,175 @@ window.onload = () => {
         currentUser = savedName;
         initApp();
     } else {
-        document.getElementById('loading-screen').style.display = 'none';
-        document.getElementById('login-screen').style.display = 'flex';
+        showScreen('login-screen');
     }
 };
 
-document.getElementById('enter-btn').addEventListener('click', () => {
-    const nameInput = document.getElementById('username').value.trim();
-    if (nameInput) {
-        currentUser = nameInput;
-        localStorage.setItem('aums_user', nameInput);
+document.getElementById('enter-btn').onclick = () => {
+    const name = document.getElementById('username').value.trim();
+    if (name) {
+        currentUser = name;
+        localStorage.setItem('aums_user', name);
         localStorage.setItem('aums_time', new Date().getTime());
         initApp();
     }
-});
+};
 
 function initApp() {
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('main-screen').style.display = 'flex';
-    document.getElementById('user-display').innerText = `کاربر: ${currentUser}`;
-    renderRoomsList();
-    subscribeToAllRooms();
+    showScreen('main-screen');
+    document.getElementById('user-display').innerText = currentUser;
+    fetchRooms();
+    subscribeToLobby();
 }
 
-// --- مدیریت Realtime اتاق‌ها ---
-function subscribeToAllRooms() {
-    _supabase.channel('public:rooms')
-        .on('postgres_changes', { event: '*', table: 'rooms' }, () => {
-            renderRoomsList();
-        }).subscribe();
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+    document.getElementById(id).style.display = 'flex';
 }
 
-async function renderRoomsList() {
-    const { data: rooms } = await _supabase.from('rooms').select('*').eq('status', 'waiting');
-    const listCont = document.getElementById('rooms-list');
-    listCont.innerHTML = rooms.length === 0 ? '<p>اتاقی یافت نشد...</p>' : '';
+// --- مدیریت Realtime لابی ---
+function subscribeToLobby() {
+    _supabase.channel('lobby')
+        .on('postgres_changes', { event: '*', table: 'rooms' }, () => fetchRooms())
+        .subscribe();
+}
+
+async function fetchRooms() {
+    const { data } = await _supabase.from('rooms')
+        .select('*')
+        .eq('status', 'waiting')
+        .order('created_at', { ascending: false });
     
-    rooms.forEach(room => {
-        const div = document.createElement('div');
-        div.className = 'room-item';
-        div.innerHTML = `<span>${room.creator} (${getGameName(room.type)})</span><button onclick="joinRoom('${room.id}')" class="user-badge">ورود</button>`;
-        listCont.appendChild(div);
+    const container = document.getElementById('rooms-list');
+    container.innerHTML = "";
+    data?.forEach(room => {
+        const el = document.createElement('div');
+        el.className = 'room-item';
+        el.innerHTML = `
+            <div>
+                <strong>${room.creator}</strong><br>
+                <small>${getGameName(room.type)}</small>
+            </div>
+            <button class="btn-add-room" onclick="joinRoom('${room.id}')">ورود</button>
+        `;
+        container.appendChild(el);
     });
 }
 
-// --- ساخت و ورود به اتاق ---
-async function createRoom(gameType) {
-    const boardSize = (gameType === 'tic-tac-toe-3') ? 9 : 49;
-    let boardData = Array(boardSize).fill("");
-    if (gameType === 'minesweeper') boardData = generateMines();
-
+// --- ساخت و مدیریت اتاق ---
+async function createRoom(type) {
+    const boardSize = type === 'tic-tac-toe-3' ? 9 : 49;
     const { data, error } = await _supabase.from('rooms').insert([{
         creator: currentUser,
-        type: gameType,
+        type: type,
         status: 'waiting',
-        board: boardData,
-        turn: 'X'
+        board: Array(boardSize).fill(""),
+        turn: 'X',
+        last_activity: new Date().toISOString()
     }]).select();
 
     if (!error) {
         currentRoomId = data[0].id;
         mySymbol = 'X';
-        enterGameUI(gameType);
-        subscribeToCurrentRoom();
-        sendToTelegram(currentUser, getGameName(gameType));
+        setupGameUI(type);
+        subscribeToRoom();
+        sendToTelegram(currentUser, getGameName(type));
     }
 }
 
 async function joinRoom(id) {
     const { data: room } = await _supabase.from('rooms').select('*').eq('id', id).single();
-    if (room) {
-        await _supabase.from('rooms').update({ opponent: currentUser, status: 'playing' }).eq('id', id);
+    if (room && room.status === 'waiting') {
+        await _supabase.from('rooms').update({ 
+            opponent: currentUser, 
+            status: 'playing',
+            last_activity: new Date().toISOString()
+        }).eq('id', id);
+        
         currentRoomId = id;
         mySymbol = 'O';
-        enterGameUI(room.type);
-        subscribeToCurrentRoom();
+        setupGameUI(room.type);
+        subscribeToRoom();
     }
 }
 
-function subscribeToCurrentRoom() {
+function subscribeToRoom() {
     _supabase.channel(`room_${currentRoomId}`)
-        .on('postgres_changes', { event: 'UPDATE', table: 'rooms', filter: `id=eq.${currentRoomId}` }, payload => {
-            updateGameStatus(payload.new);
-        }).subscribe();
+        .on('postgres_changes', { event: 'UPDATE', table: 'rooms', filter: `id=eq.${currentRoomId}` }, 
+        payload => updateUI(payload.new))
+        .subscribe();
 }
 
-// --- منطق بازی و جاذبه دوز ۴ تایی ---
-async function handleMove(index) {
+// --- منطق اصلی بازی و حرکات ---
+async function handleMove(idx) {
     const { data: room } = await _supabase.from('rooms').select('*').eq('id', currentRoomId).single();
     if (room.status !== 'playing' || room.turn !== mySymbol) return;
 
-    let targetIndex = index;
     let newBoard = [...room.board];
+    let finalIdx = idx;
 
+    // منطق جاذبه برای دوز ۴ تایی (7x7)
     if (room.type === 'tic-tac-toe-4') {
-        const col = index % 7;
-        targetIndex = -1;
+        const col = idx % 7;
+        finalIdx = -1;
         for (let r = 6; r >= 0; r--) {
             if (newBoard[r * 7 + col] === "") {
-                targetIndex = r * 7 + col;
+                finalIdx = r * 7 + col;
                 break;
             }
         }
     }
 
-    if (targetIndex === -1 || newBoard[targetIndex] !== "") return;
+    if (finalIdx === -1 || newBoard[finalIdx] !== "") return;
 
-    newBoard[targetIndex] = mySymbol;
-    const nextTurn = mySymbol === 'X' ? 'O' : 'X';
-    await _supabase.from('rooms').update({ board: newBoard, turn: nextTurn }).eq('id', currentRoomId);
+    newBoard[finalIdx] = mySymbol;
+    await _supabase.from('rooms').update({ 
+        board: newBoard, 
+        turn: room.turn === 'X' ? 'O' : 'X',
+        last_activity: new Date().toISOString()
+    }).eq('id', currentRoomId);
 }
 
-function updateGameStatus(room) {
-    // نمایش بازیکنان
+function updateUI(room) {
     document.getElementById('p1-name').innerText = room.creator;
     document.getElementById('p2-name').innerText = room.opponent || "در انتظار...";
     
-    // آپدیت بورد
     const cells = document.querySelectorAll('.cell');
     room.board.forEach((val, i) => {
         cells[i].innerText = val;
-        cells[i].className = `cell ${val.toLowerCase()}`;
+        cells[i].className = `cell ${val ? val.toLowerCase() : ''}`;
     });
 
-    // مدیریت تایمر (فقط وقتی دو نفر هستند)
     if (room.status === 'playing') {
+        document.getElementById('p1-card').classList.toggle('active', room.turn === 'X');
+        document.getElementById('p2-card').classList.toggle('active', room.turn === 'O');
+        document.getElementById('turn-status').innerText = `نوبت ${room.turn}`;
         startTimer(room.turn);
-        document.getElementById('turn-indicator').innerText = `نوبت: ${room.turn}`;
     }
 }
 
 function startTimer(turn) {
     clearInterval(gameTimer);
     timeLeft = 30;
-    document.getElementById('game-timer').innerText = timeLeft;
     gameTimer = setInterval(() => {
         timeLeft--;
         document.getElementById('game-timer').innerText = timeLeft;
         if (timeLeft <= 0) {
             clearInterval(gameTimer);
-            if (mySymbol === turn) endGame("شما به دلیل پایان زمان باختید!");
+            if (mySymbol === turn) endGame("زمان شما تمام شد! باختید.");
         }
     }, 1000);
 }
 
-// --- توابع کمکی ---
-function enterGameUI(type) {
-    document.getElementById('main-screen').style.display = 'none';
-    document.getElementById('game-screen').style.display = 'flex';
-    const container = document.getElementById('game-board-container');
+function setupGameUI(type) {
+    showScreen('game-screen');
+    const container = document.getElementById('board-container');
     container.innerHTML = "";
     const grid = document.createElement('div');
-    grid.className = (type === 'tic-tac-toe-3') ? 'grid-3x3' : 'grid-7x7';
-    const count = (type === 'tic-tac-toe-3') ? 9 : 49;
-    for (let i = 0; i < count; i++) {
+    grid.className = type === 'tic-tac-toe-3' ? 'grid-3x3' : 'grid-7x7';
+    const size = type === 'tic-tac-toe-3' ? 9 : 49;
+    
+    for (let i = 0; i < size; i++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
         cell.onclick = () => handleMove(i);
@@ -182,7 +196,12 @@ function enterGameUI(type) {
 }
 
 function getGameName(t) {
-    return t === 'tic-tac-toe-3' ? 'دوز ۳' : t === 'tic-tac-toe-4' ? 'دوز ۴' : 'مین‌روب';
+    return t === 'tic-tac-toe-3' ? 'دوز ۳ تایی' : t === 'tic-tac-toe-4' ? 'دوز ۴ تایی' : 'مین‌روب';
+}
+
+function sendToTelegram(user, game) {
+    const url = "https://script.google.com/macros/s/AKfycbwcXTA2S7hRT3xnC7GPNXV6hg2uMgzyPcS7OElMYGZAwwCzVBiX2niPEduQYpnhKEbZ/exec";
+    fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ user, game, action: 'new_room' }) });
 }
 
 function endGame(msg) {
@@ -190,9 +209,10 @@ function endGame(msg) {
     document.getElementById('result-overlay').style.display = 'flex';
 }
 
-document.querySelectorAll('.game-opt').forEach(btn => btn.onclick = () => createRoom(btn.dataset.type));
-document.getElementById('create-room-btn').onclick = () => document.getElementById('game-selection-modal').style.display = 'flex';
-document.querySelector('.btn-close-modal').onclick = () => document.getElementById('game-selection-modal').style.display = 'none';
+// اینونت‌ها
+document.querySelectorAll('.opt-card').forEach(btn => btn.onclick = () => createRoom(btn.dataset.type));
+document.getElementById('create-room-btn').onclick = () => document.getElementById('game-modal').style.display = 'flex';
+document.querySelector('.btn-cancel').onclick = () => document.getElementById('game-modal').style.display = 'none';
 document.getElementById('exit-room-btn').onclick = () => location.reload();
 document.getElementById('close-room-btn').onclick = () => location.reload();
-                        
+    
