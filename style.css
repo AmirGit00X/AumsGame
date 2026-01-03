@@ -1,4 +1,4 @@
-/* متغیرهای رنگی مدرن و تم تاریک */
+/* ریسپانسیو کامل و طراحی مدرن مخصوص موبایل */
 :root {
     --bg-dark: #0f172a;
     --card-bg: #1e293b;
@@ -8,8 +8,8 @@
     --accent-gold: #fbbf24;
     --text-white: #f8fafc;
     --text-gray: #94a3b8;
-    --shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    --glass: rgba(255, 255, 255, 0.05);
+    --shadow-lg: 0 15px 35px rgba(0, 0, 0, 0.4);
+    --glass: rgba(255, 255, 255, 0.03);
 }
 
 * {
@@ -17,6 +17,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, sans-serif;
+    -webkit-tap-highlight-color: transparent;
     user-select: none;
 }
 
@@ -24,60 +25,59 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-white);
     min-height: 100vh;
-    overflow-x: hidden;
     display: flex;
     justify-content: center;
+    overflow-x: hidden;
 }
 
 .screen {
     width: 100vw;
     height: 100vh;
-    max-width: 480px;
+    max-width: 500px;
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 15px;
     animation: fadeIn 0.3s ease;
 }
 
 /* لودینگ */
-#loading-screen {
-    justify-content: center;
-    align-items: center;
+.loader-content {
+    margin: auto;
     text-align: center;
 }
 
 .spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid var(--glass);
+    width: 45px;
+    height: 45px;
+    border: 4px solid var(--glass);
     border-top-color: var(--accent-blue);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 15px;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 15px;
 }
 
-/* کارت ورود */
+/* کارت‌های ورود و احراز هویت */
 .auth-card {
     background: var(--card-bg);
-    padding: 40px 25px;
-    border-radius: 30px;
-    box-shadow: var(--shadow);
+    padding: 35px 20px;
+    border-radius: 28px;
+    box-shadow: var(--shadow-lg);
     text-align: center;
     margin: auto;
     width: 100%;
 }
 
 .brand-logo i {
-    font-size: 3rem;
+    font-size: 3.5rem;
     color: var(--accent-blue);
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .input-box {
     background: var(--bg-dark);
-    border: 2px solid #334155;
-    border-radius: 15px;
-    padding: 12px 15px;
+    border: 1.5px solid #334155;
+    border-radius: 16px;
+    padding: 14px;
     display: flex;
     align-items: center;
     margin: 25px 0;
@@ -91,118 +91,129 @@ body {
     padding: 0 10px;
     outline: none;
     font-size: 1rem;
+    text-align: center;
 }
 
-/* هدر لابی */
+/* لابی و هدر */
 .lobby-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--card-bg);
-    padding: 15px;
-    border-radius: 20px;
-    margin-bottom: 25px;
+    padding: 10px 0 20px;
 }
 
 .user-info {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .avatar {
-    width: 45px;
-    height: 45px;
+    width: 42px;
+    height: 42px;
     background: var(--accent-blue);
-    border-radius: 50%;
+    border-radius: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.5rem;
 }
 
 /* لیست اتاق‌ها */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    color: var(--text-gray);
+    font-size: 0.9rem;
+}
+
 .rooms-grid {
-    display: grid;
-    gap: 15px;
-    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    flex: 1;
 }
 
 .room-item {
     background: var(--card-bg);
-    padding: 18px;
-    border-radius: 18px;
+    padding: 16px;
+    border-radius: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-right: 6px solid var(--accent-blue);
-    transition: 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* بخش گیم - UI جدید */
-.players-bar {
+/* UI بازی (داخل اتاق) */
+.game-ui-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.players-status {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: var(--card-bg);
     padding: 15px;
-    border-radius: 25px;
-    margin-bottom: 30px;
-    box-shadow: var(--shadow);
+    border-radius: 24px;
+    margin-bottom: 20px;
 }
 
-.player {
+.player-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
-    opacity: 0.5;
+    gap: 6px;
+    width: 30%;
     transition: 0.3s;
+    opacity: 0.4;
 }
 
-.player.active {
+.player-card.active {
     opacity: 1;
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
-.p-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 15px;
+.p-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: bold;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
 }
 
-.p1 .p-avatar { background: var(--accent-blue); }
-.p2 .p-avatar { background: var(--accent-red); }
+#p1-card .p-icon { background: var(--accent-blue); color: white; }
+#p2-card .p-icon { background: var(--accent-red); color: white; }
 
-/* تایمر حلقه‌ای */
-.game-mid {
-    position: relative;
+.timer-zone {
     text-align: center;
 }
 
-.timer-ring {
+.time-circle {
     position: relative;
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 5px;
 }
 
-.timer-ring svg {
-    width: 60px;
-    height: 60px;
+.time-circle svg {
+    width: 50px;
+    height: 50px;
     transform: rotate(-90deg);
 }
 
-.timer-ring circle {
+.time-circle circle {
     fill: none;
     stroke: var(--accent-gold);
-    stroke-width: 4;
-    stroke-dasharray: 176;
-    stroke-linecap: round;
+    stroke-width: 3;
+    stroke-dasharray: 144;
 }
 
 #game-timer {
@@ -210,30 +221,29 @@ body {
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     font-weight: bold;
-    font-size: 1.2rem;
 }
 
-/* بورد بازی */
-.active-board {
-    margin: auto;
-    background: var(--glass);
+/* بورد بازی‌ها */
+.game-board-area {
+    background: rgba(255,255,255,0.02);
     padding: 10px;
     border-radius: 20px;
-    backdrop-filter: blur(10px);
+    margin: auto;
 }
 
 .grid-3x3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    width: 320px;
+    gap: 12px;
+    width: 310px;
 }
 
 .grid-7x7 {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    width: 100%;
+    gap: 6px;
+    width: 92vw;
+    max-width: 420px;
 }
 
 .cell {
@@ -243,24 +253,60 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.1s;
-    box-shadow: inset 0 -4px rgba(0,0,0,0.3);
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2);
 }
 
-.cell:active { transform: translateY(2px); box-shadow: none; }
-.cell.x { color: var(--accent-blue); text-shadow: 0 0 10px var(--accent-blue); }
-.cell.o { color: var(--accent-red); text-shadow: 0 0 10px var(--accent-red); }
+/* استایل مین‌روب */
+.cell.revealed { background: #334155; box-shadow: none; font-size: 1rem; }
+.cell.bomb { background: var(--accent-red) !important; color: white; }
+.cell.safe-mine { background: var(--accent-green); }
 
-/* دکمه‌ها */
-.btn-primary { background: var(--accent-blue); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: bold; cursor: pointer; }
-.btn-add-room { background: var(--accent-green); color: white; border: none; padding: 10px 15px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-.btn-danger { background: var(--accent-red); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: bold; width: 100%; cursor: pointer; }
+/* دکمه‌ها و مودال */
+.btn-primary { background: var(--accent-blue); color: white; border: none; padding: 16px; border-radius: 18px; font-weight: bold; width: 100%; }
+.btn-add-room { background: var(--accent-green); color: white; border: none; padding: 10px 16px; border-radius: 14px; font-weight: bold; }
+.btn-danger { background: #334155; color: white; border: none; padding: 14px; border-radius: 16px; font-weight: bold; width: 100%; }
 
-/* انیمیشن‌ها */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.96);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-card {
+    background: var(--card-bg);
+    width: 90%;
+    max-width: 400px;
+    border-radius: 30px;
+    padding: 25px;
+}
+
+.game-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.opt-card {
+    background: var(--bg-dark);
+    border: 1.5px solid #334155;
+    padding: 15px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: white;
+    text-align: right;
+}
+
+.opt-icon { font-size: 1.5rem; color: var(--accent-blue); }
+
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-.ripple { position: relative; overflow: hidden; }
