@@ -3,90 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aums Game | پنل بازی‌های آنلاین</title>
+    <title>Aums Game | پنل بازی آنلاین</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
     <div id="loading-screen" class="screen">
-        <div class="welcome-card">
-            <h1>Aums Game</h1>
-            <p>در حال بارگذاری...</p>
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <p>در حال برقراری ارتباط با سرور...</p>
         </div>
     </div>
 
     <div id="login-screen" class="screen" style="display: none;">
-        <div class="welcome-card">
-            <h1>Aums Game</h1>
-            <p class="creator">سازنده: t.me/AmirRMQ</p>
-            <div class="input-group">
-                <label for="username">نام خود را برای شروع وارد کنید</label>
-                <input type="text" id="username" placeholder="مثلاً: امیر" maxlength="15">
+        <div class="auth-card">
+            <div class="brand-logo">
+                <i class="fas fa-gamepad"></i>
+                <h1>Aums Game</h1>
             </div>
-            <button id="enter-btn" class="btn-main">ورود به دنیای بازی</button>
+            <p class="creator">Developer: t.me/AmirRMQ</p>
+            <div class="input-box">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" placeholder="نام نمایشی خود را وارد کنید..." maxlength="15">
+            </div>
+            <button id="enter-btn" class="btn-primary ripple">ورود به دنیای بازی</button>
         </div>
     </div>
 
     <div id="main-screen" class="screen" style="display: none;">
-        <header class="main-header">
-            <div class="header-info">
-                <h1>Aums Game</h1>
-                <p>سازنده: t.me/AmirRMQ</p>
+        <header class="lobby-header">
+            <div class="user-info">
+                <div class="avatar"><i class="fas fa-circle-user"></i></div>
+                <div class="details">
+                    <span id="user-display">---</span>
+                    <small>t.me/AmirRMQ</small>
+                </div>
             </div>
-            <div id="user-display" class="user-badge"></div>
+            <button id="create-room-btn" class="btn-add-room ripple">
+                <i class="fas fa-plus"></i> ساخت اتاق
+            </button>
         </header>
 
-        <div class="action-section">
-            <button id="create-room-btn" class="btn-create">ساخت اتاق جدید +</button>
-        </div>
-
-        <div class="rooms-container">
-            <h3>اتاق‌های فعال</h3>
-            <div id="rooms-list" class="rooms-list">
+        <section class="lobby-content">
+            <div class="section-title">
+                <i class="fas fa-list-ul"></i>
+                <span>اتاق‌های آماده بازی</span>
+            </div>
+            <div id="rooms-list" class="rooms-grid">
                 </div>
-        </div>
+        </section>
     </div>
 
-    <div id="game-selection-modal" class="modal">
-        <div class="modal-content">
-            <h2>نوع بازی را انتخاب کنید</h2>
+    <div id="game-modal" class="modal">
+        <div class="modal-card">
+            <h3>نوع نبرد را انتخاب کنید</h3>
             <div class="game-options">
-                <button class="game-opt" data-type="tic-tac-toe-3">دوز سه تایی (3x3)</button>
-                <button class="game-opt" data-type="tic-tac-toe-4">دوز چهارتایی (7x7 - جاذبه)</button>
-                <button class="game-opt" data-type="minesweeper">مین‌روب رقابتی (7x7)</button>
+                <button class="opt-card" data-type="tic-tac-toe-3">
+                    <i class="fas fa-table-cells"></i>
+                    <span>دوز ۳ تایی</span>
+                    <small>کلاسیک (3x3)</small>
+                </button>
+                <button class="opt-card" data-type="tic-tac-toe-4">
+                    <i class="fas fa-grip-lines-vertical"></i>
+                    <span>دوز ۴ تایی</span>
+                    <small>جاذبه‌ای (7x7)</small>
+                </button>
+                <button class="opt-card" data-type="minesweeper">
+                    <i class="fas fa-bomb"></i>
+                    <span>مین‌روب</span>
+                    <small>رقابتی (7x7)</small>
+                </button>
             </div>
-            <button class="btn-close-modal">انصراف</button>
+            <button class="btn-cancel ripple">انصراف</button>
         </div>
     </div>
 
     <div id="game-screen" class="screen" style="display: none;">
-        <div class="game-header">
-            <div class="player-info player-x">
-                <span id="p1-name">---</span>
-                <span class="score" id="p1-score">0</span>
-            </div>
-            <div class="timer-container">
-                <div id="game-timer">--</div>
-                <div id="turn-indicator">در انتظار رقیب...</div>
-            </div>
-            <div class="player-info player-o">
-                <span id="p2-name">---</span>
-                <span class="score" id="p2-score">0</span>
-            </div>
-        </div>
+        <div class="game-ui">
+            <div class="players-bar">
+                <div class="player p1 active" id="p1-card">
+                    <div class="p-avatar">X</div>
+                    <div class="p-name" id="p1-name">---</div>
+                    <div class="p-score" id="p1-score">0</div>
+                </div>
+                
+                <div class="game-mid">
+                    <div class="timer-ring">
+                        <svg><circle cx="30" cy="30" r="28"></circle></svg>
+                        <span id="game-timer">30</span>
+                    </div>
+                    <div id="turn-status">در انتظار...</div>
+                </div>
 
-        <div id="game-board-container" class="board-wrapper">
+                <div class="player p2" id="p2-card">
+                    <div class="p-avatar">O</div>
+                    <div class="p-name" id="p2-name">---</div>
+                    <div class="p-score" id="p2-score">0</div>
+                </div>
             </div>
 
-        <div class="game-footer">
-            <button id="exit-room-btn" class="btn-exit">خروج از اتاق</button>
+            <div id="board-container" class="active-board">
+                </div>
+
+            <div class="game-controls">
+                <button id="exit-room-btn" class="btn-danger ripple">
+                    <i class="fas fa-door-open"></i> خروج از بازی
+                </button>
+            </div>
         </div>
     </div>
 
     <div id="result-overlay" class="overlay">
-        <div class="result-card">
-            <h2 id="result-message"></h2>
-            <button id="close-room-btn" class="btn-main">بستن و بازگشت</button>
+        <div class="result-box">
+            <div id="result-icon"></div>
+            <h2 id="result-message">---</h2>
+            <button id="close-room-btn" class="btn-primary">بازگشت به لابی</button>
         </div>
     </div>
 
