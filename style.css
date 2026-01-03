@@ -1,4 +1,4 @@
-/* متغیرهای رنگی بر اساس تم درخواست شده */
+/* تنظیمات پایه و تم رنگی */
 :root {
     --bg-color: #0f172a;
     --card-bg: #1e293b;
@@ -20,14 +20,13 @@
 body {
     background-color: var(--bg-color);
     color: var(--text-main);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     overflow-x: hidden;
 }
 
-/* ساختار کلی صفحات */
 .screen {
     width: 100vw;
     height: 100vh;
@@ -35,15 +34,10 @@ body {
     display: flex;
     flex-direction: column;
     padding: 20px;
-    animation: fadeIn 0.4s ease-out;
+    animation: fadeIn 0.3s ease-in;
 }
 
-/* صفحه ورود */
-#login-screen {
-    justify-content: center;
-    align-items: center;
-}
-
+/* کارت‌های خوش‌آمدگویی و ورود */
 .welcome-card {
     background: var(--card-bg);
     padding: 40px 30px;
@@ -51,30 +45,14 @@ body {
     text-align: center;
     box-shadow: 0 20px 40px var(--shadow);
     width: 90%;
-}
-
-.welcome-card h1 {
-    font-size: 2.5rem;
-    color: var(--accent-x);
-    margin-bottom: 5px;
+    margin: auto;
 }
 
 .creator {
     color: #94a3b8;
-    font-size: 0.9rem;
-    margin-bottom: 30px;
+    font-size: 0.8rem;
     direction: ltr;
-}
-
-.input-group {
-    margin-bottom: 25px;
-    text-align: right;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
+    margin-bottom: 20px;
 }
 
 .input-group input {
@@ -84,15 +62,15 @@ body {
     border: 2px solid #334155;
     background: #0f172a;
     color: white;
-    font-size: 1rem;
     text-align: center;
-    outline: none;
+    font-size: 1.1rem;
+    margin-top: 10px;
 }
 
-/* صفحه اصلی */
+/* هدر اصلی */
 .main-header {
     background: var(--card-bg);
-    padding: 15px 20px;
+    padding: 15px;
     border-radius: 15px;
     display: flex;
     justify-content: space-between;
@@ -100,78 +78,33 @@ body {
     margin-bottom: 20px;
 }
 
-.header-info h1 { font-size: 1.2rem; color: var(--accent-x); }
-.header-info p { font-size: 0.7rem; color: #94a3b8; direction: ltr; }
-
 .user-badge {
-    background: #334155;
+    background: var(--accent-x);
     padding: 5px 12px;
     border-radius: 50px;
     font-size: 0.8rem;
 }
 
 /* لیست اتاق‌ها */
-.rooms-container {
-    flex-grow: 1;
-    overflow-y: auto;
-    margin-top: 20px;
-}
-
 .rooms-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     margin-top: 15px;
 }
 
 .room-item {
     background: var(--card-bg);
     padding: 15px;
-    border-radius: 15px;
+    border-radius: 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-right: 4px solid var(--accent-x);
+    border-right: 5px solid var(--accent-x);
+    animation: slideIn 0.3s ease;
 }
 
-.room-info h4 { font-size: 1rem; margin-bottom: 4px; }
-.room-info span { font-size: 0.8rem; color: #94a3b8; }
-
-/* صفحه بازی */
-.game-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--card-bg);
-    padding: 15px;
-    border-radius: 20px;
-    margin-bottom: 20px;
-}
-
-.player-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 30%;
-}
-
-.player-x { color: var(--accent-x); }
-.player-o { color: var(--accent-o); }
-
-.timer-container {
-    text-align: center;
-    width: 40%;
-}
-
-#game-timer {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: var(--accent-gold);
-}
-
-#turn-indicator { font-size: 0.8rem; margin-top: 5px; }
-
-/* بوردهای بازی */
+/* بورد بازی */
 .board-wrapper {
     display: flex;
     justify-content: center;
@@ -183,14 +116,15 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    width: 320px;
+    width: 300px;
 }
 
 .grid-7x7 {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+    gap: 5px;
     width: 100%;
+    max-width: 400px;
 }
 
 .cell {
@@ -202,35 +136,35 @@ body {
     align-items: center;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2);
+    transition: transform 0.1s;
 }
 
-.grid-3x3 .cell { font-size: 2.5rem; }
-.grid-7x7 .cell { font-size: 1rem; border-radius: 4px; }
+.cell:active { transform: scale(0.95); }
+
+/* مهره‌های دوز */
+.cell.x { color: var(--accent-x); font-size: 2rem; }
+.cell.o { color: var(--accent-o); font-size: 2rem; }
 
 /* استایل مخصوص مین‌روب */
-.cell.revealed { background: #334155; }
-.cell.mine { background: var(--accent-o); }
-.cell.safe { background: #10b981; }
+.cell.mine-found { background: var(--accent-o); border: 2px solid white; }
+.cell.safe-found { background: #10b981; }
 
 /* دکمه‌ها */
 .btn-main, .btn-create, .btn-exit {
-    width: 100%;
     padding: 15px;
     border: none;
     border-radius: 12px;
     font-weight: bold;
     cursor: pointer;
-    transition: var(--transition);
+    width: 100%;
 }
 
 .btn-main { background: var(--accent-x); color: white; }
-.btn-create { background: #10b981; color: white; margin-bottom: 10px; }
+.btn-create { background: #10b981; color: white; margin-bottom: 15px; }
 .btn-exit { background: #334155; color: white; }
 
-.btn-main:active, .btn-create:active { transform: scale(0.98); }
-
-/* مودال‌ها و اورلی */
+/* مودال و اورلی */
 .modal, .overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -238,15 +172,14 @@ body {
     display: none;
     justify-content: center;
     align-items: center;
-    z-index: 100;
+    z-index: 1000;
 }
 
 .modal-content, .result-card {
     background: var(--card-bg);
     width: 85%;
-    max-width: 400px;
-    padding: 30px;
-    border-radius: 25px;
+    padding: 25px;
+    border-radius: 20px;
     text-align: center;
 }
 
@@ -254,7 +187,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin: 25px 0;
+    margin: 20px 0;
 }
 
 .game-opt {
@@ -266,9 +199,5 @@ body {
     cursor: pointer;
 }
 
-.game-opt:hover { background: var(--accent-x); }
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
