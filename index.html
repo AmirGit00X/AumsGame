@@ -8,7 +8,14 @@
 </head>
 <body>
 
-    <div id="login-screen" class="screen">
+    <div id="loading-screen" class="screen">
+        <div class="welcome-card">
+            <h1>Aums Game</h1>
+            <p>در حال بارگذاری...</p>
+        </div>
+    </div>
+
+    <div id="login-screen" class="screen" style="display: none;">
         <div class="welcome-card">
             <h1>Aums Game</h1>
             <p class="creator">سازنده: t.me/AmirRMQ</p>
@@ -34,20 +41,19 @@
         </div>
 
         <div class="rooms-container">
-            <h3>اتاق‌های در انتظار بازیکن</h3>
+            <h3>اتاق‌های فعال</h3>
             <div id="rooms-list" class="rooms-list">
-                <p class="empty-msg">در حال جستجوی اتاق‌ها...</p>
-            </div>
+                </div>
         </div>
     </div>
 
     <div id="game-selection-modal" class="modal">
         <div class="modal-content">
-            <h2>چه بازی‌ای می‌خوای بسازی؟</h2>
+            <h2>نوع بازی را انتخاب کنید</h2>
             <div class="game-options">
                 <button class="game-opt" data-type="tic-tac-toe-3">دوز سه تایی (3x3)</button>
-                <button class="game-opt" data-type="tic-tac-toe-4">دوز چهارتایی (7x7)</button>
-                <button class="game-opt" data-type="minesweeper">مین‌روب (7x7)</button>
+                <button class="game-opt" data-type="tic-tac-toe-4">دوز چهارتایی (7x7 - جاذبه)</button>
+                <button class="game-opt" data-type="minesweeper">مین‌روب رقابتی (7x7)</button>
             </div>
             <button class="btn-close-modal">انصراف</button>
         </div>
@@ -60,8 +66,8 @@
                 <span class="score" id="p1-score">0</span>
             </div>
             <div class="timer-container">
-                <div id="game-timer">30</div>
-                <div id="turn-indicator">در انتظار حریف...</div>
+                <div id="game-timer">--</div>
+                <div id="turn-indicator">در انتظار رقیب...</div>
             </div>
             <div class="player-info player-o">
                 <span id="p2-name">---</span>
@@ -79,8 +85,8 @@
 
     <div id="result-overlay" class="overlay">
         <div class="result-card">
-            <h2 id="result-message">بازیکن X برنده شد!</h2>
-            <button id="close-room-btn" class="btn-main">بستن اتاق</button>
+            <h2 id="result-message"></h2>
+            <button id="close-room-btn" class="btn-main">بستن و بازگشت</button>
         </div>
     </div>
 
