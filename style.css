@@ -1,1 +1,274 @@
+/* متغیرهای رنگی بر اساس تم درخواست شده */
+:root {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-main: #f8fafc;
+    --accent-x: #3b82f6;
+    --accent-o: #f43f5e;
+    --accent-gold: #fbbf24;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --transition: all 0.3s ease;
+}
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    overflow-x: hidden;
+}
+
+/* ساختار کلی صفحات */
+.screen {
+    width: 100vw;
+    height: 100vh;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* صفحه ورود */
+#login-screen {
+    justify-content: center;
+    align-items: center;
+}
+
+.welcome-card {
+    background: var(--card-bg);
+    padding: 40px 30px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 20px 40px var(--shadow);
+    width: 90%;
+}
+
+.welcome-card h1 {
+    font-size: 2.5rem;
+    color: var(--accent-x);
+    margin-bottom: 5px;
+}
+
+.creator {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+    direction: ltr;
+}
+
+.input-group {
+    margin-bottom: 25px;
+    text-align: right;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: 2px solid #334155;
+    background: #0f172a;
+    color: white;
+    font-size: 1rem;
+    text-align: center;
+    outline: none;
+}
+
+/* صفحه اصلی */
+.main-header {
+    background: var(--card-bg);
+    padding: 15px 20px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header-info h1 { font-size: 1.2rem; color: var(--accent-x); }
+.header-info p { font-size: 0.7rem; color: #94a3b8; direction: ltr; }
+
+.user-badge {
+    background: #334155;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+}
+
+/* لیست اتاق‌ها */
+.rooms-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-top: 20px;
+}
+
+.rooms-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.room-item {
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-right: 4px solid var(--accent-x);
+}
+
+.room-info h4 { font-size: 1rem; margin-bottom: 4px; }
+.room-info span { font-size: 0.8rem; color: #94a3b8; }
+
+/* صفحه بازی */
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+}
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+}
+
+.player-x { color: var(--accent-x); }
+.player-o { color: var(--accent-o); }
+
+.timer-container {
+    text-align: center;
+    width: 40%;
+}
+
+#game-timer {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--accent-gold);
+}
+
+#turn-indicator { font-size: 0.8rem; margin-top: 5px; }
+
+/* بوردهای بازی */
+.board-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto 0;
+}
+
+.grid-3x3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 320px;
+}
+
+.grid-7x7 {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    width: 100%;
+}
+
+.cell {
+    aspect-ratio: 1/1;
+    background: var(--card-bg);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+}
+
+.grid-3x3 .cell { font-size: 2.5rem; }
+.grid-7x7 .cell { font-size: 1rem; border-radius: 4px; }
+
+/* استایل مخصوص مین‌روب */
+.cell.revealed { background: #334155; }
+.cell.mine { background: var(--accent-o); }
+.cell.safe { background: #10b981; }
+
+/* دکمه‌ها */
+.btn-main, .btn-create, .btn-exit {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-main { background: var(--accent-x); color: white; }
+.btn-create { background: #10b981; color: white; margin-bottom: 10px; }
+.btn-exit { background: #334155; color: white; }
+
+.btn-main:active, .btn-create:active { transform: scale(0.98); }
+
+/* مودال‌ها و اورلی */
+.modal, .overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.95);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-content, .result-card {
+    background: var(--card-bg);
+    width: 85%;
+    max-width: 400px;
+    padding: 30px;
+    border-radius: 25px;
+    text-align: center;
+}
+
+.game-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 25px 0;
+}
+
+.game-opt {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    background: #0f172a;
+    color: white;
+    cursor: pointer;
+}
+
+.game-opt:hover { background: var(--accent-x); }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
